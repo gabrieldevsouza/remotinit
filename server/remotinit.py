@@ -11,25 +11,23 @@ PORT = 2011
 def on_click(icon, item):
 	if str(item) == "Quit":
 		icon.stop()
-	elif str(item) == "Run server":
-		os.system("start c:/bedrock-current/bedrock_server.exe")
-	#elif str(item) == "Say Hello!":
-	#	print("Hello, World!")
-	#elif str(item) == "Subitem 1":
-	#	print("Subitem 1")
-	#elif str(item) == "Subitem 2":
-	#	print("Subitem 2")
+	elif str(item) == "START server":
+		server = HTTPServer((HOST, PORT), NeuralHTTP)
+		server.serve_forever()
+		server.serve_close()
+		print("Server started http://%s:%s" % (HOST, PORT))
 	
     
 icon = pystray.Icon("RemotInit!", image, menu=pystray.Menu(
 	pystray.MenuItem("Quit", on_click),
-	pystray.MenuItem("Run server", on_click),
-	#pystray.MenuItem("Say Hello!", on_click),
-	#pystray.MenuItem("Submenu", pystray.Menu(
-	#	pystray.MenuItem("Subitem 1", on_click),
-	#	pystray.MenuItem("Subitem 2", on_click),
-	#)),
+	pystray.MenuItem("START server", on_click),
+	pystray.MenuItem("STOP server", on_click),
 ))
+
+def check_message(message):
+	if message == 'WAKEBEDROCK':
+		os.system("start c:/bedrock-current/bedrock_server.exe")
+
 
 
 class NeuralHTTP(BaseHTTPRequestHandler):
@@ -44,22 +42,18 @@ class NeuralHTTP(BaseHTTPRequestHandler):
 
 	def do_POST(self):
 		self.send_response(200)
-		self.send_header("Content-type", "application/json")
+		self.send_header("Content-type", "text/plain")
 		self.end_headers()
 
 
 		content_len = int(self.headers.get('Content-Length'))
 		post_body = self.rfile.read(content_len)
-		print("Content:", post_body)
+		check_message(post_body.decode("utf-8"))
 		return
 
 
-server = HTTPServer((HOST, PORT), NeuralHTTP)
-server.serve_forever()
-server.serve_close()
-print("Server started http://%s:%s" % (HOST, PORT))
+icon.run()
 
-#icon.run()
 
 
 #
