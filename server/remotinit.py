@@ -35,7 +35,6 @@ class NeuralHTTP(BaseHTTPRequestHandler):
 		return
 
 
-
 HOST = "192.168.15.106"
 PORT = 2011
 
@@ -51,9 +50,6 @@ def start_server():
 	print("Server started on http://%s:%s" % (HOST, PORT))
 	server.serve_forever()
 	print("SERVER CLOSED")
-	
-
-
 
 
 def on_click(icon, item):
