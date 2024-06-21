@@ -12,13 +12,33 @@ BEDROCK_PATH = "C:\\bedrock-current\\bedrock_server.exe";
 BEDROCK_PROCESS = os.path.basename(os.path.normpath(BEDROCK_PATH));
 #c:/bedrock-current/bedrock_server.exe
 
+
+
+HOST = "192.168.15.106";
+PORT = 2011;
+
 print("");
 
 bedrock_starting = False;
 listener_started = False;
 
+
+def is_port_in_use(port: int) -> bool:
+	import socket
+	#with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+	#	return s.connect_ex((HOST, port)) == 0;
+
+	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	result = sock.connect_ex((HOST,19132))
+	if result == 0:
+		return True
+	else:
+		return False
+
+
 def check_process(process_name):
 	return process_name in (p.name() for p in psutil.process_iter());
+
 
 def check_message(message):
 	global bedrock_starting;
@@ -29,7 +49,9 @@ def check_message(message):
 def request_start_bedrock():
 	if bedrock_starting == False:
 		#threading.Thread(target=start_bedrock_process, daemon=True).start();
-		print(check_bedrock_process());
+		#print(check_bedrock_process());
+		print(" :: CHECK PORT :: ");
+		print(is_port_in_use(19132));
 	else:
 		print("Bedrock already started");
 
@@ -74,9 +96,6 @@ class NeuralHTTP(BaseHTTPRequestHandler):
 		check_message(post_body.decode("utf-8"));
 		return
 
-
-HOST = "192.168.15.106";
-PORT = 2011;
 
 def start_listener():
 	global listener_started;
@@ -128,11 +147,6 @@ icon = pystray.Icon("RemotInit!", image, menu=pystray.Menu(
 def start_icon():
 	print("BEGIN START icon");
 	icon.run();
-
-def is_port_in_use(port: int) -> bool:
-	import socket
-	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-		return s.connect_ex(('localhost', port)) == 0;
 
 def kill_2011():
 	terminal_kill_2011 = "";
